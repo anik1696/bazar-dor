@@ -2,8 +2,10 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Button, Input, Card, CardBody } from "@heroui/react";
+import { Button, Input, Card, CardBody, Form } from "@heroui/react";
+import { updateUser } from "@/app/lib/auth-client";
 import { useAuth } from "@/context/AuthContext";
+import toast from "react-hot-toast";
 
 export default function UpdateProfilePage() {
   const { user, isLoading, updateProfileName } = useAuth();
@@ -16,16 +18,43 @@ export default function UpdateProfilePage() {
     if (user) setName(user.name || "");
   }, [user, isLoading, router]);
 
-  async function handleSubmit(e) {
+  const handleUpdateUser = async (e) => {
     e.preventDefault();
-    if (!name.trim()) return;
-    setSubmitting(true);
-    const ok = await updateProfileName(name.trim());
-    setSubmitting(false);
-    if (ok) router.replace("/profile");
-  }
+    const formData = new FormData(e.currentTarget);
+    const UserData = Object.fromEntries(formData.entries());
 
-  if (isLoading || !user) return <div className="flex items-center justify-center min-h-[50vh]"><div className="w-8 h-8 border-4 border-[#05893e] border-t-transparent rounded-full animate-spin"/></div>;
+    console.log("Data from the form", UserData);
+
+    if (!UserData.name || !UserData.name.trim()) {
+      toast.error("নাম দিন।");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const resData = await updateUser({
+        name: UserData.name.trim(),
+      });
+      console.log("Updated Name", resData);
+
+      // Also sync local auth context
+      await updateProfileName(UserData.name.trim());
+      router.replace("/profile");
+    } catch (err) {
+      console.error("Update error:", err);
+      toast.error("আপডেট করতে সমস্যা হয়েছে।");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (isLoading || !user) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="w-8 h-8 border-4 border-[#05893e] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-lg mx-auto px-4 sm:px-6 py-10 space-y-6">
@@ -36,8 +65,9 @@ export default function UpdateProfilePage() {
 
       <Card shadow="none" className="border border-gray-200 bg-white">
         <CardBody className="p-6 sm:p-8 space-y-5">
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <Form onSubmit={handleUpdateUser} className="space-y-4">
             <Input
+              name="name"
               label="নাম"
               placeholder="আপনার নাম লিখুন"
               value={name}
@@ -47,15 +77,22 @@ export default function UpdateProfilePage() {
               isRequired
             />
             <Button
-              type="submit" fullWidth isLoading={submitting}
+              type="submit"
+              fullWidth
+              isLoading={submitting}
               isDisabled={!name.trim()}
               className="bg-[#05893e] text-white font-semibold rounded-xl h-11"
             >
               {!submitting && "আপডেট করুন"}
             </Button>
-          </form>
+          </Form>
           <div className="text-center">
-            <Link href="/profile" className="text-sm text-gray-400 hover:text-[#05893e] transition-colors">← প্রোফাইলে ফিরে যান</Link>
+            <Link
+              href="/profile"
+              className="text-sm text-gray-400 hover:text-[#05893e] transition-colors"
+            >
+              ← প্রোফাইলে ফিরে যান
+            </Link>
           </div>
         </CardBody>
       </Card>
