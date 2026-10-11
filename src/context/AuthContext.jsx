@@ -6,10 +6,8 @@ import toast from "react-hot-toast";
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  // ✅ Use BetterAuth's real session hook — reads from the session cookie set after OAuth
   const { data: session, isPending } = authClient.useSession();
 
-  // Map BetterAuth session user to a simple shape
   const user = session?.user
     ? {
         id: session.user.id,
@@ -18,8 +16,6 @@ export function AuthProvider({ children }) {
         image: session.user.image,
       }
     : null;
-
-  const isLoading = isPending;
 
   async function signInWithCredentials(email, password) {
     try {
@@ -51,13 +47,10 @@ export function AuthProvider({ children }) {
     }
   }
 
-  // ✅ Social login — just trigger the redirect. BetterAuth handles everything.
-  // The browser will go to Google/GitHub, then come back. useSession() will
-  // automatically pick up the real user (name, email, image) from the cookie.
   async function signInSocial(provider, callbackURL = "/") {
     try {
       await authClient.signIn.social({ provider, callbackURL });
-    } catch (err) {
+    } catch {
       toast.error(`${provider} দিয়ে সাইন ইন ব্যর্থ হয়েছে।`);
     }
   }
@@ -86,7 +79,7 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider
       value={{
         user,
-        isLoading,
+        isLoading: isPending,
         signInWithCredentials,
         signUpWithCredentials,
         signInSocial,

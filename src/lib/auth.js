@@ -3,10 +3,9 @@ import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { MongoClient } from "mongodb";
 
 if (!process.env.MONGODB_URI) {
-  throw new Error("Please add your MONGODB_URI to .env.local");
+  throw new Error("Missing MONGODB_URI in .env.local");
 }
 
-// Reuse connection across hot reloads in development
 let clientPromise;
 
 if (process.env.NODE_ENV === "development") {

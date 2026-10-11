@@ -7,26 +7,19 @@ const API_BASES = [
 async function fetchFromApi(endpoint, opts = {}) {
   for (const base of API_BASES) {
     try {
-      const res = await fetch(`${base}${endpoint}`, { next: { revalidate: 60 }, ...opts });
+      const res = await fetch(`${base}${endpoint}`, {
+        next: { revalidate: 60 },
+        ...opts,
+      });
       if (res.ok) return res.json();
-    } catch { /* try next */ }
+    } catch {}
   }
   return null;
 }
 
 export async function getAllCategories() {
   const data = await fetchFromApi("/categories");
-  if (Array.isArray(data)) return data;
-  return [
-    { id: "chal",    slug: "chal",    nameBn: "চাল",     icon: "🍚" },
-    { id: "dal",     slug: "dal",     nameBn: "ডাল",     icon: "🫘" },
-    { id: "tel",     slug: "tel",     nameBn: "তেল",     icon: "🛢️" },
-    { id: "sobji",   slug: "sobji",   nameBn: "সবজি",    icon: "🥬" },
-    { id: "mach",    slug: "mach",    nameBn: "মাছ",     icon: "🐟" },
-    { id: "mangsho", slug: "mangsho", nameBn: "মাংস",    icon: "🍗" },
-    { id: "dim-dudh",slug: "dim-dudh",nameBn: "ডিম-দুধ", icon: "🥛" },
-    { id: "moshla",  slug: "moshla",  nameBn: "মসলা",    icon: "🌶️" },
-  ];
+  return Array.isArray(data) ? data : [];
 }
 
 export async function getCategoryBySlug(slug) {
@@ -42,19 +35,21 @@ export async function getAllProducts() {
 }
 
 export async function getProductsByCategory(categorySlug) {
-  const data = await fetchFromApi(`/products?category=${encodeURIComponent(categorySlug)}`);
+  const data = await fetchFromApi(
+    `/products?category=${encodeURIComponent(categorySlug)}`
+  );
   if (Array.isArray(data)) return data;
   const all = await getAllProducts();
   return all.filter((p) => p.category === categorySlug);
 }
 
 export async function getProductById(idOrSlug) {
-  // Try direct fetch by id
   const data = await fetchFromApi(`/products/${idOrSlug}`);
   if (data && data.nameBn) return data;
-  // Fallback: find by slug in all products then fetch by numeric id
   const all = await getAllProducts();
-  const found = all.find((p) => p.slug === idOrSlug || String(p.id) === String(idOrSlug));
+  const found = all.find(
+    (p) => p.slug === idOrSlug || String(p.id) === String(idOrSlug)
+  );
   if (found) {
     const detail = await fetchFromApi(`/products/${found.id}`);
     return detail || found;

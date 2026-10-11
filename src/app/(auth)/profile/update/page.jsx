@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { Button, Input, Card, CardBody, Form } from "@heroui/react";
 import { updateUser } from "@/app/lib/auth-client";
 import { useAuth } from "@/context/AuthContext";
-import toast from "react-hot-toast";
 
 export default function UpdateProfilePage() {
   const { user, isLoading, updateProfileName } = useAuth();
@@ -21,29 +20,16 @@ export default function UpdateProfilePage() {
   const handleUpdateUser = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const UserData = Object.fromEntries(formData.entries());
+    const userData = Object.fromEntries(formData.entries());
 
-    console.log("Data from the form", UserData);
-
-    if (!UserData.name || !UserData.name.trim()) {
-      toast.error("নাম দিন।");
-      return;
-    }
+    if (!userData.name?.trim()) return;
 
     setSubmitting(true);
     try {
-      const resData = await updateUser({
-        name: UserData.name.trim(),
-      });
-      console.log("Updated Name", resData);
-
-      // Also sync local auth context
-      await updateProfileName(UserData.name.trim());
+      await updateUser({ name: userData.name.trim() });
+      await updateProfileName(userData.name.trim());
       router.replace("/profile");
-    } catch (err) {
-      console.error("Update error:", err);
-      toast.error("আপডেট করতে সমস্যা হয়েছে।");
-    } finally {
+    } catch {
       setSubmitting(false);
     }
   };
@@ -87,10 +73,7 @@ export default function UpdateProfilePage() {
             </Button>
           </Form>
           <div className="text-center">
-            <Link
-              href="/profile"
-              className="text-sm text-gray-400 hover:text-[#05893e] transition-colors"
-            >
+            <Link href="/profile" className="text-sm text-gray-400 hover:text-[#05893e] transition-colors">
               ← প্রোফাইলে ফিরে যান
             </Link>
           </div>
