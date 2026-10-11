@@ -1,5 +1,5 @@
 import "./globals.css";
-import { Inter } from "next/font/google";
+import { Hind_Siliguri } from "next/font/google";
 import { HeroUIProvider } from "@heroui/react";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "@/context/AuthContext";
@@ -8,7 +8,10 @@ import Footer from "@/components/Footer";
 import PriceTicker from "@/components/PriceTicker";
 import { getAllCategories, getAllProducts } from "@/lib/api";
 
-const inter = Inter({ subsets: ["latin"] });
+const hindSiliguri = Hind_Siliguri({
+  subsets: ["bengali", "latin"],
+  weight: ["300", "400", "500", "600", "700"],
+});
 
 export const metadata = {
   title: "বাজার দর | আজকের বাজারের দাম এক নজরে",
@@ -23,7 +26,7 @@ export default async function RootLayout({ children }) {
 
   return (
     <html lang="bn" className="light">
-      <body className={`${inter.className} min-h-screen flex flex-col bg-[#f0f5f0]`}>
+      <body className={`${hindSiliguri.className} min-h-screen flex flex-col bg-[#f0f5f0]`}>
         <HeroUIProvider>
           <AuthProvider>
             <Toaster

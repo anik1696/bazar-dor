@@ -3,7 +3,12 @@ const nextConfig = {
   images: {
     remotePatterns: [{ protocol: "https", hostname: "**" }],
   },
-  // Tell webpack not to bundle mongodb for the client
+  async rewrites() {
+    return [
+      { source: "/signin", destination: "/sign-in" },
+      { source: "/signup", destination: "/sign-up" },
+    ];
+  },
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
