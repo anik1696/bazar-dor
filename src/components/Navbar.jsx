@@ -44,6 +44,7 @@ export default function Navbar({ categories = [] }) {
                   <button className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors">
                     <Avatar
                       name={user.name}
+                      src={user.image || undefined}
                       size="sm"
                       className="bg-[#05893e] text-white text-xs font-bold"
                       showFallback

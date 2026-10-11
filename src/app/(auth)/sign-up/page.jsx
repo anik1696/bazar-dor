@@ -29,7 +29,10 @@ export default function SignUpPage() {
     if (ok) router.replace("/sign-in");
   }
 
-  async function handleSocial(p) { await signInSocial(p); router.replace("/"); }
+  async function handleSocial(p) {
+    // callbackURL="/" — BetterAuth handles the redirect after OAuth
+    await signInSocial(p, "/");
+  }
 
   return (
     <div className="min-h-[70vh] flex items-center justify-center px-4 py-10 bg-[#f0f5f0]">

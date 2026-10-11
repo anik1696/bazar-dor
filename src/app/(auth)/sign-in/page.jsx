@@ -28,7 +28,9 @@ function SignInForm() {
   }
 
   async function handleSocial(provider) {
-    await signInSocial(provider); router.replace(from);
+    // Pass callbackURL so BetterAuth redirects back here after OAuth
+    // The browser navigates away to Google/GitHub — no need to call router.replace
+    await signInSocial(provider, from);
   }
 
   return (
