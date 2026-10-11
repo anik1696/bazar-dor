@@ -6,3 +6,6 @@ node_modules
 *.db
 out/
 build/
+
+.vercel
+.env*

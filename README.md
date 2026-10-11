@@ -86,6 +86,12 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
+## Live Demo
+
+- **Live Application:** [https://bazar-dor-rho-six.vercel.app](https://bazar-dor-rho-six.vercel.app)
+
+---
+
 ## Repository
 
 [github.com/anik1696/bazar-dor](https://github.com/anik1696/bazar-dor)
